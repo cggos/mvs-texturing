@@ -20,15 +20,15 @@ externalproject_add(ext_rayint
     INSTALL_COMMAND ""
 )
 
-externalproject_add(ext_eigen
-    PREFIX          ext_eigen
-    URL             https://gitlab.com/libeigen/eigen/-/archive/3.3.2/eigen-3.3.2.tar.gz
-    URL_MD5         02edfeec591ae09848223d622700a10b
-    SOURCE_DIR      ${CMAKE_SOURCE_DIR}/elibs/eigen
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND   ""
-    INSTALL_COMMAND ""
-)
+# externalproject_add(ext_eigen
+#     PREFIX          ext_eigen
+#     URL             https://gitlab.com/libeigen/eigen/-/archive/3.3.2/eigen-3.3.2.tar.gz
+#     URL_MD5         02edfeec591ae09848223d622700a10b
+#     SOURCE_DIR      ${CMAKE_SOURCE_DIR}/elibs/eigen
+#     CONFIGURE_COMMAND ""
+#     BUILD_COMMAND   ""
+#     INSTALL_COMMAND ""
+# )
 
 externalproject_add(ext_mve
     PREFIX          mve
