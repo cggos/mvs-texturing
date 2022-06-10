@@ -63,6 +63,11 @@ this better, you can also tell us.
 Execution
 --------------------------------------------------------------------------------
 
+```sh
+cd build
+./apps/texrecon/texrecon ../../data/textured_mesh_scene/face000/keyFrames/ ../../data/textured_mesh_scene/face000/mesh/meshRefine.ply ../../data/out/face000
+```
+
 As input our algorithm requires a triangulated 3D model and images that are
 registered against this model. One way to obtain this is to:
 *   import images, infer camera parameters and reconstruct depth maps
