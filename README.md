@@ -63,11 +63,6 @@ this better, you can also tell us.
 Execution
 --------------------------------------------------------------------------------
 
-```sh
-cd build
-./apps/texrecon/texrecon ../../data/textured_mesh_scene/face000/keyFrames/ ../../data/textured_mesh_scene/face000/mesh/meshRefine.ply ../../data/out/face000
-```
-
 As input our algorithm requires a triangulated 3D model and images that are
 registered against this model. One way to obtain this is to:
 *   import images, infer camera parameters and reconstruct depth maps
@@ -78,6 +73,75 @@ registered against this model. One way to obtain this is to:
     [Floating Scale Surface Reconstruction]
     (http://www.gcc.tu-darmstadt.de/home/proj/fssr/)
     algorithm.
+
+```sh
+# Usage: ./apps/texrecon/texrecon [options] IN_SCENE IN_MESH OUT_PREFIX
+
+cd build
+./apps/texrecon/texrecon ../../data/textured_mesh_scene/face000/keyFrames/ ../../data/textured_mesh_scene/face000/mesh/meshRefine.ply ../../data/out/face000
+```
+
+* IN_SCENE (dir)
+  - keyFrame00xx.CAM
+    ```cpp
+    struct CameraInfo {
+      public:
+      /* Intrinsic camera parameters. */
+
+      /** Focal length. */
+      float flen;
+      /** Principal point in x- and y-direction. */
+      float ppoint[2];
+      /** Pixel aspect ratio pixel_width / pixel_height. */
+      float paspect;
+      /** Image distortion parameters. */
+      float dist[2];
+
+      /* Extrinsic camera parameters. */
+
+      /** Camera translation vector. Camera position p = -ROT^T * trans. */
+      float trans[3];
+      /** Camera rotation which transforms from world to cam. */
+      float rot[9];
+    };
+
+    mve::CameraInfo camera;
+    camera.flen = mParams.fx / mParams.cols;
+    camera.ppoint[0] = mParams.cx / mParams.cols;
+    camera.ppoint[1] = mParams.cy / mParams.rows;
+    camera.dist[0] = 0.0;
+    camera.dist[1] = 0.0;
+    camera.paspect = 1.0; // 1.0 // mParams.cols / mParams.rows
+    // keyFrameInfo.poseAffinetInv: Tcw (Tcnc0)
+    // rotation, row-major
+    camera.rot[0] = keyFrameInfo.poseAffinetInv.matrix.val[0];
+    camera.rot[1] = keyFrameInfo.poseAffinetInv.matrix.val[1];
+    camera.rot[2] = keyFrameInfo.poseAffinetInv.matrix.val[2];
+    camera.rot[3] = keyFrameInfo.poseAffinetInv.matrix.val[4];
+    camera.rot[4] = keyFrameInfo.poseAffinetInv.matrix.val[5];
+    camera.rot[5] = keyFrameInfo.poseAffinetInv.matrix.val[6];
+    camera.rot[6] = keyFrameInfo.poseAffinetInv.matrix.val[8];
+    camera.rot[7] = keyFrameInfo.poseAffinetInv.matrix.val[9];
+    camera.rot[8] = keyFrameInfo.poseAffinetInv.matrix.val[10];
+    // translation
+    camera.trans[0] = keyFrameInfo.poseAffinetInv.matrix.val[3];
+    camera.trans[1] = keyFrameInfo.poseAffinetInv.matrix.val[7];
+    camera.trans[2] = keyFrameInfo.poseAffinetInv.matrix.val[11];
+
+    // write to .CAM file
+    output_file
+      << camera.trans[0] << " " << camera.trans[1] << " " << camera.trans[2] << " "
+      << camera.rot[0] << " " << camera.rot[1] << " " << camera.rot[2] << " "
+      << camera.rot[3] << " " << camera.rot[4] << " " << camera.rot[5] << " "
+      << camera.rot[6] << " " << camera.rot[7] << " " << camera.rot[8] << std::endl;
+    output_file
+      << camera.flen << " "
+      << camera.dist[0] << " " << camera.dist[1] << " "
+      << camera.paspect << " "
+      << camera.ppoint[0] << " " << camera.ppoint[1] << std::endl;    
+    ```
+  - keyFrame00xx_color.png
+  - keyFrame00xx_depth.png
 
 A quick guide on how to use these applications can be found on our project [website](http://www.gcc.tu-darmstadt.de/home/proj/texrecon/).
 
