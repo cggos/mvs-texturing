@@ -65,6 +65,14 @@ int main(int argc, char **argv) {
         omp_set_dynamic(0);
         omp_set_num_threads(conf.num_threads);
     }
+    
+    // ================ Scene Color Images --> Texture Views ================
+
+    std::cout << "Generating texture views: " << std::endl;
+    tex::TextureViews texture_views;
+    tex::generate_texture_views(conf.in_scene, &texture_views, tmp_dir);
+
+    // ================ Mesh --> MeshInfo ================
 
     std::cout << "Load and prepare mesh: " << std::endl;
     mve::TriangleMesh::Ptr mesh;
@@ -76,19 +84,22 @@ int main(int argc, char **argv) {
     }
     mve::MeshInfo mesh_info(mesh);
     tex::prepare_mesh(&mesh_info, mesh);
-
-    std::cout << "Generating texture views: " << std::endl;
-    tex::TextureViews texture_views;
-    tex::generate_texture_views(conf.in_scene, &texture_views, tmp_dir);
+    
+    // ===============
 
     write_string_to_file(conf.out_prefix + ".conf", conf.to_string());
+
     timer.measure("Loading");
 
     std::size_t const num_faces = mesh->get_faces().size() / 3;
+    
+    // ================ Build Adjacency Graph ================
 
     std::cout << "Building adjacency graph: " << std::endl;
     tex::Graph graph(num_faces);
     tex::build_adjacency_graph(mesh, mesh_info, &graph);
+    
+    // ================ View Selection ================
 
     if (conf.labeling_file.empty()) {
         std::cout << "View selection:" << std::endl;
@@ -155,6 +166,8 @@ int main(int argc, char **argv) {
 
         std::cout << "done." << std::endl;
     }
+    
+    // ================ Create Texture Atlases ================
 
     tex::TextureAtlases texture_atlases;
     {
@@ -192,6 +205,8 @@ int main(int argc, char **argv) {
         std::cout << "Generating texture atlases:" << std::endl;
         tex::generate_texture_atlases(&texture_patches, conf.settings, &texture_atlases);
     }
+    
+    // ================ Mesh + Texture --> Obj Model ================
 
     /* Create and write out obj model. */
     {
