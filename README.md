@@ -78,7 +78,7 @@ registered against this model. One way to obtain this is to:
 # Usage: ./apps/texrecon/texrecon [options] IN_SCENE IN_MESH OUT_PREFIX
 
 cd build
-./apps/texrecon/texrecon ../../data/textured_mesh_scene/face000/keyFrames/ ../../data/textured_mesh_scene/face000/mesh/meshRefine.ply ../../data/out/face000
+./apps/texrecon/texrecon --data_term=area --keep_unseen_faces ../../data/textured_mesh_scene/face000/keyFrames/ ../../data/textured_mesh_scene/face000/mesh/meshRefine.ply ../../data/out/face000
 ```
 
 * IN_MESH
