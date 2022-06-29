@@ -13,6 +13,7 @@
 #include <fstream>
 
 #include <util/timer.h>
+#include <mve/image_io.h>
 #include <mve/image_tools.h>
 
 #include "defines.h"
@@ -121,6 +122,7 @@ generate_texture_atlases(std::vector<TexturePatch::Ptr> * orig_texture_patches,
     #pragma omp single
     {
 
+    int patch_count = 0;
     while (!texture_patches.empty()) {
         unsigned int texture_size = calculate_texture_size(texture_patches);
 
@@ -141,6 +143,15 @@ generate_texture_atlases(std::vector<TexturePatch::Ptr> * orig_texture_patches,
             }
 
             if (texture_atlas->insert(*it)) {
+#if 1
+                // [cggos 20220628] save texture patches 
+                char patch_name[16];
+                sprintf(patch_name, "%04d.png", patch_count++);
+                std::string str_dir = "/tmp/";
+                std::string image_file = str_dir + patch_name;
+                mve::ByteImage::Ptr patch_image = mve::image::float_to_byte_image((*it)->get_image(), 0.0f, 1.0f);
+                mve::image::save_png_file(patch_image, image_file);
+#endif                
                 it = texture_patches.erase(it);
                 remaining_patches -= 1;
             } else {
